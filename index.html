@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Konklave Kandidaten</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.card {
+    width: 130px;
+    background: white;
+    border: 1px solid #aaa;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.img {
+    width: 100%;
+    height: 110px;
+    background: #ddd;
+    background-size: cover;
+    background-position: center;
+}
+
+.name {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px;
+}
+
+.bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #eee;
+    padding: 2px;
+    font-size: 11px;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.badge {
+    background: black;
+    color: white;
+    padding: 1px 4px;
+    font-size: 11px;
+}
+
+.type {
+    padding: 1px 4px;
+    color: white;
+    font-size: 11px;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    background: red;
+    color: white;
+    border: none;
+    font-size: 11px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h3>Konklave</h3>
+<button onclick="addCard()">+ Kandidat</button>
+
+<div class="container" id="container"></div>
+
+<script>
+const maxCards = 10;
+
+const colors = {
+    ERZ: "#002060",
+    TRA: "#0050ff",
+    KON: "#66b3ff",
+    MOD: "#ffd700",
+    REF: "#ff9999",
+    LIB: "#ff3333",
+    PRO: "#8b0000"
+};
+
+const flags = {
+    IT:"🇮🇹", DE:"🇩🇪", FR:"🇫🇷", ES:"🇪🇸", US:"🇺🇸",
+    GB:"🇬🇧", PL:"🇵🇱", HU:"🇭🇺", AT:"🇦🇹", CH:"🇨🇭",
+    BR:"🇧🇷", AR:"🇦🇷", MX:"🇲🇽", CA:"🇨🇦",
+    PH:"🇵🇭", KR:"🇰🇷", JP:"🇯🇵", CN:"🇨🇳", IN:"🇮🇳"
+};
+
+function createCard() {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+        <button class="delete-btn" onclick="this.parentElement.remove()">X</button>
+
+        <div class="img" onclick="uploadImage(this)"></div>
+
+        <div class="name" onclick="editText(this)">Name</div>
+
+        <div class="bar">
+            <div class="left">
+                <span onclick="editText(this)">🏳️</span>
+                <span class="badge" onclick="editText(this)">0</span>
+                <span class="badge" onclick="editText(this)">0</span>
+            </div>
+            <span class="type" onclick="cycleType(this)">---</span>
+        </div>
+    `;
+
+    return div;
+}
+
+function addCard() {
+    const c = document.getElementById("container");
+    if (c.children.length < maxCards) c.appendChild(createCard());
+}
+
+function editText(el) {
+    const val = prompt("Wert eingeben:", el.innerText);
+    if (val !== null) el.innerText = val;
+}
+
+function cycleType(el) {
+    const types = ["ERZ","TRA","KON","MOD","REF","LIB","PRO"];
+    let i = types.indexOf(el.innerText);
+    i = (i + 1) % types.length;
+    el.innerText = types[i];
+    el.style.background = colors[types[i]];
+}
+
+function uploadImage(div) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = ev => {
+            div.style.backgroundImage = `url(${ev.target.result})`;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    input.click();
+}
+
+// Start
+for (let i = 0; i < 5; i++) addCard();
+</script>
+
+</body>
+</html>
